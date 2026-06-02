@@ -32,4 +32,10 @@ UN_IGME_URL = (
     "UNICEF,CME,1.0/.CME_MRY0._T._T?format=csv"
 )
 
+# NCHS Period Linked Birth/Infant Death microdata (record level), hosted by NBER.
+# This is the raw data behind the rates: one row per birth, with the infant-death
+# outcome and birth-certificate covariates — used for individual risk modeling.
+NBER_LINKED_URL = "https://data.nber.org/linkpe/{year}/linkpe{year}us{kind}.csv.zip"
+MICRODATA_YEARS = [2011, 2012, 2013]
+
 RANDOM_STATE = 42

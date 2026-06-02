@@ -28,6 +28,19 @@ source, entity, iso3, entity_type, year, imr, imr_low, imr_high
 
 `entity_type` is `country` for the global sources and `us_race` for CDC.
 
+### Raw microdata (record level)
+
+The sources above are **aggregate** — already collapsed into one rate per
+group-year, so they only support trend and comparison analysis. For a different
+perspective, `src/data/sources/nber_microdata.py` pulls the **raw NCHS Period
+Linked Birth/Infant Death microdata** (hosted by NBER): one row per birth, with
+the infant-death outcome and birth-certificate covariates (birth weight,
+gestation, prenatal care, maternal age/education/race, plurality, smoking). This
+powers **individual risk modeling** — *what makes a birth more likely to end in
+infant death* — rather than trends. Pooled over 2011–2013, that is ~12M births.
+It downloads ~500 MB on first use and is kept on its own modeling schema (not the
+rate panel).
+
 **Known data-quality issues**
 
 - CDC spells one group two ways — `"Black"` and `"Black "` (trailing space);
@@ -46,6 +59,9 @@ source, entity, iso3, entity_type, year, imr, imr_low, imr_high
 3. **Long-run global trend** — the century-plus worldwide decline. (notebook 05)
 4. **The Black–White disparity** — quantified and tested on the CDC series.
    (notebooks 01, 03, 04)
+5. **Individual risk factors** — logistic regression of infant death on birth
+   weight, gestation, prenatal care, and maternal age, from the raw microdata.
+   (notebook 06)
 
 ## Repository Structure
 
@@ -57,7 +73,8 @@ source, entity, iso3, entity_type, year, imr, imr_low, imr_high
 │   ├── 02_cleaning.ipynb             # CDC: fix labels, save tidy tables
 │   ├── 03_statistical_testing.ipynb  # CDC: test the Black–White disparity
 │   ├── 04_modeling.ipynb             # CDC: regress the decline (linear + log)
-│   └── 05_multisource.ipynb          # all sources: validation, global context, trend
+│   ├── 05_multisource.ipynb          # all sources: validation, global context, trend
+│   └── 06_microdata_risk.ipynb       # raw microdata: individual infant-death risk model
 ├── src/
 │   ├── config.py                     # paths, endpoints, tidy schema
 │   ├── data/

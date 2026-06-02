@@ -1,7 +1,8 @@
+import numpy as np
 import pandas as pd
 
 from src.config import TIDY_COLUMNS
-from src.data.sources import cdc, world_bank, owid
+from src.data.sources import cdc, world_bank, owid, nber_microdata
 
 
 def test_cdc_tidy_strips_whitespace_and_schema():
@@ -50,3 +51,27 @@ def test_world_bank_drops_aggregates():
     out = world_bank.tidy(raw)
     assert list(out["iso3"]) == ["USA"]
     assert list(out.columns) == TIDY_COLUMNS
+
+
+def test_nber_microdata_decodes_codes():
+    raw = pd.DataFrame({
+        "dbwt": [3500, 9999],          # 9999 = unknown -> NaN
+        "combgest": [39, 99],          # 99 = unknown -> NaN
+        "mager41": [28, 33],
+        "dplural": [1, 2],
+        "sex": ["M", "F"],
+        "precare": [2, 99],
+        "uprevis": [12, 99],
+        "meduc": [6, 9],               # 9 = unknown -> NaN
+        "mracehisp": [1, 7],           # White (NH), Hispanic
+        "cig_rec": ["N", "Y"],
+        "died": [0, 1],
+        "year": [2013, 2013],
+    })
+    out = nber_microdata.tidy(raw)
+    assert np.isnan(out.loc[1, "birthweight_g"])
+    assert np.isnan(out.loc[1, "gestation_wks"])
+    assert np.isnan(out.loc[1, "mother_educ"])
+    assert list(out["mother_race_hisp"]) == ["White (NH)", "Hispanic"]
+    assert list(out["smoker"]) == [0, 1]
+    assert out["died"].tolist() == [0, 1]
