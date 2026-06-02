@@ -1,65 +1,71 @@
-# U.S. Infant Mortality Rate (1915–2013)
+# U.S. Infant Mortality Rate — A Multi-Source Analysis
 
-A statistical analysis of historical U.S. infant mortality rates (IMR) by race,
-using CDC / NCHS data. A companion project to the AAI-500 coursework, applying
-the same probability-and-statistics toolkit (descriptive statistics, estimation,
-significance testing, and regression) to a long historical time series.
+A statistical analysis of infant mortality rates (IMR — deaths before age one per
+1,000 live births), combining **five public data sources**. A companion project to
+the AAI-500 coursework, applying the probability-and-statistics toolkit
+(descriptive statistics, estimation, significance testing, and regression) to the
+U.S. by-race history *and* the U.S. in global context.
 
-## Project Overview
+## Data sources
 
-Infant mortality — deaths before age one per 1,000 live births — is a core
-population-health indicator. The U.S. rate fell dramatically over the twentieth
-century, but a persistent gap between Black and White infants did not close.
-This project documents and quantifies those two stories.
+Each source has its own loader under `src/data/sources/`. Every loader pulls from
+a public endpoint (no API key needed), caches the raw file in `data/raw/`, and
+tidies to a common schema. `src/data/harmonize.py` stacks them into one panel.
 
-**Objectives**
+| Source | Module | Coverage | Notes |
+|---|---|---|---|
+| **CDC / NCHS** | `cdc.py` | U.S. by race, 1915–2013 | the Black–White disparity series |
+| **World Bank** (WDI) | `world_bank.py` | ~200 countries, 1960–2024 | `SP.DYN.IMRT.IN` |
+| **WHO** (GHO) | `who.py` | ~200 countries, 1932–2023 | carries uncertainty bounds |
+| **Our World in Data** | `owid.py` | global, long historical | value is a percent → ×10 |
+| **UN IGME** (UNICEF) | `un_igme.py` | ~200 countries, 1931–2024 | the canonical UN estimates + bounds |
 
-1. Pull and validate the CDC/NCHS historical series.
-2. Describe the distribution and the long-run trend of the rate.
-3. Quantify and test the Black–White disparity over time.
-4. Model the decline (e.g., regression on year, including a log scale) and
-   clearly document limitations.
+**Common tidy schema** (`src.config.TIDY_COLUMNS`):
 
-## Dataset
+```
+source, entity, iso3, entity_type, year, imr, imr_low, imr_high
+```
 
-**Source.** CDC / NCHS — *Infant Mortality Rates, by Race: United States,
-1915–2013*, served from the [data.cdc.gov Socrata API](https://data.cdc.gov/National-Center-for-Health-Statistics/NCHS-Infant-Mortality-Rates-by-Race-United-States-/ddsk-zebd)
-(dataset id `ddsk-zebd`). No API key is required at this volume. The raw CSV is
-**not** committed — `src.data.load.load_raw()` pulls it on first use and caches a
-copy in `data/raw/`.
-
-| Column | Description |
-|---|---|
-| `race` | Black or White (the raw data also contains a stray `"Black "` with a trailing space) |
-| `year` | calendar year, 1915–2013 |
-| `infant_mortality_rate` | deaths before age 1 per 1,000 live births |
-
-198 rows (2 race groups × 99 years).
+`entity_type` is `country` for the global sources and `us_race` for CDC.
 
 **Known data-quality issues**
 
-- The same group is spelled two ways: `"Black"` and `"Black "` (trailing space).
-  `src/data/clean.py` strips the whitespace so the group is not split in two.
+- CDC spells one group two ways — `"Black"` and `"Black "` (trailing space);
+  `cdc.tidy()` strips the whitespace so it is not split in two.
+- The global sources include regional/income aggregates ("World", etc.); each
+  loader keeps only real countries (ISO-3 codes).
+- The four country-level sources largely derive from UN IGME, so their close
+  agreement is **consistency, not independent corroboration**.
+
+## What the analysis covers
+
+1. **Cross-source validation** — do the sources agree on the U.S. rate where they
+   overlap? (notebook 05)
+2. **U.S. in global context** — the U.S. ranks ~47th of ~196 countries despite its
+   wealth. (notebook 05)
+3. **Long-run global trend** — the century-plus worldwide decline. (notebook 05)
+4. **The Black–White disparity** — quantified and tested on the CDC series.
+   (notebooks 01, 03, 04)
 
 ## Repository Structure
 
 ```
 .
-├── data/
-│   ├── raw/         # untracked — CDC pull cached here
-│   ├── interim/
-│   └── processed/
+├── data/{raw,interim,processed}/     # raw cache is untracked
 ├── notebooks/
-│   ├── 01_eda.ipynb
-│   ├── 02_cleaning.ipynb
-│   ├── 03_statistical_testing.ipynb
-│   └── 04_modeling.ipynb
+│   ├── 01_eda.ipynb                  # CDC: trend by race
+│   ├── 02_cleaning.ipynb             # CDC: fix labels, save tidy tables
+│   ├── 03_statistical_testing.ipynb  # CDC: test the Black–White disparity
+│   ├── 04_modeling.ipynb             # CDC: regress the decline (linear + log)
+│   └── 05_multisource.ipynb          # all sources: validation, global context, trend
 ├── src/
-│   ├── config.py    # paths, dataset id, constants
-│   ├── data/        # load (CDC pull) and clean
-│   └── viz/         # plotting helpers
-├── reports/         # tracked figures, tables, and write-ups
-├── tests/           # pytest unit tests for src/
+│   ├── config.py                     # paths, endpoints, tidy schema
+│   ├── data/
+│   │   ├── sources/                  # one loader per source
+│   │   └── harmonize.py              # stack sources into one panel
+│   └── viz/plots.py
+├── reports/                          # tracked figures, tables, write-ups
+├── tests/
 ├── requirements.txt
 └── README.md
 ```
@@ -72,15 +78,21 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-The dataset is pulled automatically the first time `load_raw()` runs (it just
-reads the public CDC API — no credentials needed):
+Each source is pulled automatically on first use (public endpoints, no keys):
 
-```bash
-python -c "from src.data.load import load_raw; print(load_raw().shape)"
+```python
+from src.data import harmonize
+panel = harmonize.load_all()          # all five sources, tidy
+harmonize.us_across_sources(panel)    # U.S. rate by year and source
 ```
 
-The notebooks add the project root to `sys.path`, so `from src.config import ...`
-works without an editable install.
+Or one source at a time:
+
+```python
+from src.data.sources import cdc, world_bank
+cdc.tidy()            # U.S. by race
+world_bank.tidy()     # all countries
+```
 
 ## Running the Analysis
 
@@ -88,12 +100,8 @@ works without an editable install.
 jupyter notebook
 ```
 
-| # | Notebook | Purpose |
-|---|---|---|
-| 01 | `01_eda.ipynb` | Load the data, summarize the rate, plot the long-run trend by race. |
-| 02 | `02_cleaning.ipynb` | Fix the race-label whitespace, set types, save the cleaned/ wide tables. |
-| 03 | `03_statistical_testing.ipynb` | Quantify and test the Black–White disparity; correlate year with the rate. |
-| 04 | `04_modeling.ipynb` | Regress the rate on year (linear and log scale) to characterize the decline. |
+Run the notebooks in order (01–04 are the CDC deep dive; 05 is the multi-source
+comparison).
 
 ## Testing
 
@@ -101,23 +109,21 @@ jupyter notebook
 pytest
 ```
 
-## Methodology Notes
-
-- **Reproducibility.** The CDC pull is cached locally and the dataset id is
-  pinned in `src/config.py`.
-- **Aggregate data.** These are published yearly rates, not individual records,
-  so the analysis is descriptive and trend-focused; group comparisons treat the
-  paired yearly rates rather than patient-level observations.
+The tests exercise each loader's `tidy()` on small fixtures (no network), covering
+the whitespace fix, the percent→per-1,000 conversion, and aggregate filtering.
 
 ## Limitations (working list)
 
-- Aggregate national rates only — no individual-level covariates.
-- Race is limited to Black and White in this historical series.
-- Rates across years are not independent observations (autocorrelation), which a
-  simple regression does not fully account for.
-- This is a coursework-style analysis, not a demographic research product.
+- Aggregate national rates — no individual-level covariates.
+- CDC's historical series covers only Black and White.
+- Yearly rates are autocorrelated; simple regressions understate the uncertainty.
+- The global sources are not independent, so cross-source agreement is expected.
+- Coursework-style analysis, not a demographic research product.
 
 ## References
 
 - CDC / NCHS, *Infant Mortality Rates, by Race: United States, 1915–2013*.
-- University of San Diego, AAI-500 *Probability and Statistics for AI*.
+- World Bank, *World Development Indicators* (`SP.DYN.IMRT.IN`).
+- WHO, *Global Health Observatory* (`MDG_0000000001`).
+- UN IGME / UNICEF, *Child Mortality Estimates* (`CME_MRY0`).
+- Our World in Data, *Infant Mortality*.

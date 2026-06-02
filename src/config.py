@@ -10,11 +10,26 @@ PROCESSED_DIR = DATA_DIR / "processed"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
-# CDC / NCHS "Infant Mortality Rates, by Race: United States, 1915-2013".
-# Pulled from the data.cdc.gov Socrata API (no key needed for this volume).
-CDC_DATASET_ID = "ddsk-zebd"
-CDC_CSV_URL = f"https://data.cdc.gov/resource/{CDC_DATASET_ID}.csv?$limit=50000"
-RAW_FILENAME = "nchs_infant_mortality_by_race.csv"
+# Infant mortality rate = deaths before age 1 per 1,000 live births.
+# Every source loader tidies to this common schema:
+TIDY_COLUMNS = ["source", "entity", "iso3", "entity_type", "year", "imr", "imr_low", "imr_high"]
 
-RATE_COL = "infant_mortality_rate"  # deaths per 1,000 live births
+# --- Source endpoints (all public, no API key needed) ---
+# CDC / NCHS — Infant Mortality Rates, by Race: United States, 1915-2013
+CDC_CSV_URL = "https://data.cdc.gov/resource/ddsk-zebd.csv?$limit=50000"
+# World Bank — World Development Indicators, all countries 1960-present
+WORLD_BANK_URL = (
+    "https://api.worldbank.org/v2/country/all/indicator/"
+    "SP.DYN.IMRT.IN?format=json&per_page=20000"
+)
+# WHO — Global Health Observatory (carries uncertainty bounds)
+WHO_GHO_URL = "https://ghoapi.azureedge.net/api/MDG_0000000001"
+# Our World in Data — long historical series (value is a percent; x10 -> per 1,000)
+OWID_URL = "https://ourworldindata.org/grapher/infant-mortality.csv?csvType=full"
+# UN IGME via the UNICEF SDMX API (carries uncertainty bounds)
+UN_IGME_URL = (
+    "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest/data/"
+    "UNICEF,CME,1.0/.CME_MRY0._T._T?format=csv"
+)
+
 RANDOM_STATE = 42
