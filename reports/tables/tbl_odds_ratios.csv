@@ -1,0 +1,20 @@
+,odds_ratio,ci_low,ci_high,p_value
+Intercept,0.0013,0.0013,0.0013,0.0
+"C(bw_cat, Treatment('2500-3999g'))[T.<1500g]",19.0561,18.1422,20.016,0.0
+"C(bw_cat, Treatment('2500-3999g'))[T.1500-2499g]",4.6351,4.487,4.7881,0.0
+"C(bw_cat, Treatment('2500-3999g'))[T.4000g+]",0.7404,0.6954,0.7884,0.0
+"C(gest_cat, Treatment('37wk+'))[T.<28wk]",9.1015,8.6503,9.5762,0.0
+"C(gest_cat, Treatment('37wk+'))[T.28-31wk]",1.8229,1.7327,1.9178,0.0
+"C(gest_cat, Treatment('37wk+'))[T.32-36wk]",1.5468,1.5006,1.5945,0.0
+"C(plural_cat, Treatment('Singleton'))[T.Multiple]",0.8445,0.8217,0.8679,0.0
+"C(sex_cat, Treatment('F'))[T.M]",1.2009,1.1792,1.2229,0.0
+"C(mage_cat, Treatment('20-34'))[T.<20]",1.1039,1.0701,1.1388,0.0
+"C(mage_cat, Treatment('20-34'))[T.35+]",0.9726,0.9475,0.9984,0.0373
+"C(educ_cat, Treatment('College+'))[T.<HS]",1.59,1.5396,1.6421,0.0
+"C(educ_cat, Treatment('College+'))[T.HS]",1.433,1.3928,1.4744,0.0
+"C(educ_cat, Treatment('College+'))[T.Some college]",1.2566,1.2224,1.2916,0.0
+"C(mother_race_hisp, Treatment('White (NH)'))[T.Black (NH)]",1.0345,1.0105,1.059,0.0047
+"C(mother_race_hisp, Treatment('White (NH)'))[T.Hispanic]",0.8423,0.821,0.8641,0.0
+"C(mother_race_hisp, Treatment('White (NH)'))[T.Other (NH)]",0.9119,0.8757,0.9496,0.0
+"C(prenatal, Treatment('Some'))[T.None]",1.333,1.28,1.3882,0.0
+smoker,1.3366,1.3005,1.3737,0.0

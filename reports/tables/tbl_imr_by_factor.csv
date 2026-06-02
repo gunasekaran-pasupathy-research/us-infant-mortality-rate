@@ -1,0 +1,28 @@
+factor,level,n,deaths,imr_per_1000
+bw_cat,<1500g,210065,37277,177.5
+bw_cat,1500-2499g,799415,10483,13.1
+bw_cat,2500-3999g,9993054,20875,2.1
+bw_cat,4000g+,927225,1364,1.5
+gest_cat,<28wk,142739,33132,232.1
+gest_cat,28-31wk,194790,5200,26.7
+gest_cat,32-36wk,2103019,12188,5.8
+gest_cat,37wk+,9479333,19228,2.0
+mage_cat,<20,928242,7842,8.4
+mage_cat,20-34,9218658,52239,5.7
+mage_cat,35+,1786289,10328,5.8
+plural_cat,Multiple,420778,10319,24.5
+plural_cat,Singleton,11512411,60090,5.2
+sex_cat,F,5823067,31185,5.4
+sex_cat,M,6110122,39224,6.4
+prenatal,None,169281,4703,27.8
+prenatal,Some,11763908,65706,5.6
+smoker,0.0,9037491,48005,5.3
+smoker,1.0,864858,8497,9.8
+educ_cat,<HS,1768420,13230,7.5
+educ_cat,College+,3019550,10788,3.6
+educ_cat,HS,2596620,17930,6.9
+educ_cat,Some college,3007457,16856,5.6
+mother_race_hisp,Black (NH),1770047,19519,11.0
+mother_race_hisp,Hispanic,2760797,13669,5.0
+mother_race_hisp,Other (NH),871257,3939,4.5
+mother_race_hisp,White (NH),6444148,32150,5.0

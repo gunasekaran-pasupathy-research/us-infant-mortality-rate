@@ -63,7 +63,7 @@ def test_nber_microdata_decodes_codes():
         "precare": [2, 99],
         "uprevis": [12, 99],
         "meduc": [6, 9],               # 9 = unknown -> NaN
-        "mracehisp": [1, 7],           # White (NH), Hispanic
+        "mracehisp": [6, 1],           # 6 = NH White, 1 = Hispanic (Mexican)
         "cig_rec": ["N", "Y"],
         "died": [0, 1],
         "year": [2013, 2013],

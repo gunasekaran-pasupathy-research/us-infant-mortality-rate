@@ -39,7 +39,8 @@ gestation, prenatal care, maternal age/education/race, plurality, smoking). This
 powers **individual risk modeling** — *what makes a birth more likely to end in
 infant death* — rather than trends. Pooled over 2011–2013, that is ~12M births.
 It downloads ~500 MB on first use and is kept on its own modeling schema (not the
-rate panel).
+rate panel). The findings are written up in
+[`reports/microdata_risk_report.md`](reports/microdata_risk_report.md).
 
 **Known data-quality issues**
 

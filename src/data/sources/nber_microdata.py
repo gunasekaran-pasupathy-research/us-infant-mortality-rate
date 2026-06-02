@@ -22,9 +22,11 @@ from src.config import MICRODATA_YEARS, NBER_LINKED_URL, RAW_DIR
 KEEP = ["dbwt", "combgest", "mager41", "dplural", "sex",
         "precare", "uprevis", "meduc", "mracehisp", "cig_rec"]
 
+# mracehisp recode (verified against mbrace x umhisp): 1-5 are Hispanic
+# subgroups, 6 = NH White, 7 = NH Black, 8 = NH other races, 9 = unknown.
 RACE_HISP = {
-    1: "White (NH)", 2: "Black (NH)", 3: "AIAN (NH)", 4: "Asian (NH)",
-    5: "NHOPI (NH)", 6: "Multiple (NH)", 7: "Hispanic",
+    1: "Hispanic", 2: "Hispanic", 3: "Hispanic", 4: "Hispanic", 5: "Hispanic",
+    6: "White (NH)", 7: "Black (NH)", 8: "Other (NH)",
 }
 
 

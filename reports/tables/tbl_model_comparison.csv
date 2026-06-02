@@ -1,0 +1,4 @@
+model,df_model,pseudo_r2,aic
+1: birth,8,0.2861,475998.4
+2: + maternal,11,0.2881,474674.7
+3: + social,18,0.2901,473356.3
